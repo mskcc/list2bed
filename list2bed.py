@@ -1,6 +1,5 @@
-import pybedtools, shutil, os, argparse
-
-
+#!/opt/common/CentOS_6-dev/python/python-2.7.10/bin/python
+import pybedtools, shutil, os, argparse, sys
 def ListToBed(inFile, outFile, sort):
     outFileSort = outFile+".srt"
     outHandle = open(outFileSort,"w")
@@ -19,6 +18,7 @@ def ListToBed(inFile, outFile, sort):
                 outHandle.write(str(chr) + "\t" + str(st) + "\t" + str(en) + "\n")
     outHandle.close()
     if(sort) :
+        print >>sys.stderr, "Sorting..."
         bedtool = pybedtools.BedTool(outFileSort)
         stbedtool = bedtool.sort()
         mbedtool = stbedtool.merge(d=50)
@@ -32,6 +32,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input_file", help="picard interval list", required=True)
     parser.add_argument("-o", "--output_file", help="output bed file", required=True)
-    parser.add_argument("-ns", "--no_sort", help="sort bed file output", default='store_false')
+    parser.add_argument("-ns", "--no_sort", help="sort bed file output", action='store_false')
     args = parser.parse_args()
-    ListToBed(args.input_file, args.output_file, not args.no_sort)
+    print args
+    ListToBed(os.path.abspath(args.input_file), os.path.abspath(args.output_file), args.no_sort)
